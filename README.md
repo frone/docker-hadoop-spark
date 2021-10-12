@@ -67,7 +67,7 @@ Go to the command line of the Spark master and start PySpark.
 
 Load breweries.csv from HDFS.
 ```
-  brewfile = spark.read.csv("hdfs://namenode:8020/data/openbeer/breweries/breweries.csv")
+  brewfile = spark.read.csv("hdfs://namenode:9000/data/openbeer/breweries/breweries.csv")
   
   brewfile.show()
 +----+--------------------+-------------+-----+---+
@@ -113,7 +113,7 @@ Go to the command line of the Spark master and start spark-shell.
 
 Load breweries.csv from HDFS.
 ```
-  val df = spark.read.csv("hdfs://namenode:8020/data/openbeer/breweries/breweries.csv")
+  val df = spark.read.csv("hdfs://namenode:9000/data/openbeer/breweries/breweries.csv")
   
   df.show()
 +----+--------------------+-------------+-----+---+
@@ -149,7 +149,7 @@ How cool is that? Your own Spark cluster to play with.
 
 ## Quick Start Hive
 
-Go to the command line of the Hive server and start hiveserver2
+~~Go to the command line of the Hive server and start hiveserver2~~
 
 ```
   docker exec -it hive-server bash
@@ -157,19 +157,24 @@ Go to the command line of the Hive server and start hiveserver2
   hiveserver2
 ```
 
-Maybe a little check that something is listening on port 10000 now
+~~Maybe a little check that something is listening on port 10000 now~~
+
 ```
   netstat -anp | grep 10000
 tcp        0      0 0.0.0.0:10000           0.0.0.0:*               LISTEN      446/java
 
 ```
 
+hiveserver2 command has been added into docker-compose.yml
+
+
+
 Okay. Beeline is the command line interface with Hive. Let's connect to hiveserver2 now.
 
 ```
   beeline
   
-  !connect jdbc:hive2://127.0.0.1:10000 scott tiger
+  !connect jdbc:hive2://hive-server:10000 scott tiger
 ```
 
 Didn't expect to encounter scott/tiger again after my Oracle days. But there you have it. Definitely not a good idea to keep that user on production.
@@ -236,19 +241,27 @@ There you go: your private Hive server to play with.
 
 The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
 ```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+  CORE_CONF_fs_defaultFS=hdfs://namenode:9000
 ```
 
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
+CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:9000 will be transformed into:
 ```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
+  <property><name>fs.defaultFS</name><value>hdfs://namenode:9000</value></property>
 ```
 To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
 ```
   <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
 ```
 
+Add these two lines to make sure when logging into the server with root role, we can play Scott role in beeline
+
+```
+CORE_CONF_hadoop_proxyuser_root_hosts=*
+CORE_CONF_hadoop_proxyuser_root_groups=*
+```
+
 The available configurations are:
+
 * /etc/hadoop/core-site.xml CORE_CONF
 * /etc/hadoop/hdfs-site.xml HDFS_CONF
 * /etc/hadoop/yarn-site.xml YARN_CONF
