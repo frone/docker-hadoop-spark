@@ -11,6 +11,7 @@ services:
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
     environment:
+      - SPARK_WORKER_MEMORY=1g
       - CLUSTER_NAME=test
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
     env_file:
@@ -25,6 +26,7 @@ services:
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
       CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+      SPARK_WORKER_MEMORY: 1g
     ports:
       - "9864:9864"
     env_file:
@@ -82,6 +84,8 @@ services:
     environment:
       - "SPARK_MASTER=spark://spark-master:7077"
       - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
+      - SPARK_WORKER_MEMORY=2g
+      - SPARK_WORKER_CORES=2
 
   hive-server:
     image: bde2020/hive:2.3.2-postgresql-metastore
@@ -91,6 +95,7 @@ services:
       - datanode
     env_file:
       - ./hadoop-hive.env
+    command: /opt/hive/bin/hiveserver2
     environment:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"

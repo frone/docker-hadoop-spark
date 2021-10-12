@@ -1,0 +1,1 @@
+(standard input):cd160e0db9ec   bde2020/hive:2.3.2-postgresql-metastore                  "entrypoint.sh /bin/…"   59 minutes ago   Up 8 minutes              0.0.0.0:10000->10000/tcp, 10002/tcp                        hive-server
